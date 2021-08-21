@@ -1,0 +1,45 @@
+a)
+SELECT * FROM `user` WHERE dateCreate >= (CURDATE() - INTERVAL 2 DAY);
+
+b)
+SELECT firstname, lastname, orders.id, SUM(value) AS totalvalue
+FROM user, orders
+WHERE user.id = orders.userid
+GROUP BY user.id
+
+c)
+SELECT firstname, lastname 
+FROM user
+WHERE id IN (SELECT userid 
+				 FROM orders
+				 GROUP BY userid
+				 HAVING COUNT(id) >= 2
+				 ORDER BY userid)
+d)				 
+SELECT firstname,lastname,orders.id, COUNT(orderitem.id) AS brojporudzbina
+FROM user,orders,orderitem
+WHERE user.id=orders.userid AND orders.id=orderitem.orderid
+GROUP BY user.id
+
+e)
+SELECT firstname,lastname,orders.id
+FROM USER,orders,orderitem
+WHERE user.id = orders.userid AND
+ orders.id = orderitem.orderid AND
+ orders.id IN (	SELECT orderid
+						FROM orderitem
+						GROUP BY orderid
+						HAVING COUNT(*)>=2
+						ORDER BY orderid)
+GROUP BY user.id
+
+f)
+SELECT firstname,lastname
+FROM USER,orders
+WHERE user.id = orders.userid AND orders.id 
+IN (
+SELECT orderid
+FROM orderitem
+GROUP BY orderid
+HAVING COUNT(DISTINCT productid) >= 3
+)
