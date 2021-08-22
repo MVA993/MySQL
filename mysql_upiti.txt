@@ -1,0 +1,46 @@
+a)
+SELECT * FROM user WHERE dateCreate >= (CURDATE() - INTERVAL 2 DAY);
+//pod pretpostavkom da se u zadatku traži datum registracije(prijave)
+
+b)
+SELECT firstname, lastname, orders.id, SUM(value) AS totalvalue
+FROM user AS u, orders AS o
+WHERE u.id = o.userid
+GROUP BY u.id;
+
+c)
+SELECT firstname, lastname 
+FROM user
+WHERE id IN (	SELECT userid 
+		FROM orders
+		GROUP BY userid
+		HAVING COUNT(id) >= 2
+		ORDER BY userid);
+				 
+d)				 
+SELECT u.firstname, u.lastname, o.id, COUNT(o.id) AS numberoforders
+FROM user AS u
+INNER JOIN orders AS o ON u.id = o.userid
+INNER JOIN orderitem AS oi ON oi.orderid = o.id
+GROUP BY u.id;
+
+e)
+SELECT u.firstname, u.lastname, o.id
+FROM user AS u
+INNER JOIN orders AS o ON u.id = o.userid
+INNER JOIN orderitem AS oi ON oi.orderid = o.id
+WHERE oi.id IN (SELECT orderid
+		FROM orderitem
+		GROUP BY orderid
+		HAVING COUNT(*)>=2
+		ORDER BY orderid)
+GROUP BY u.id;
+
+f)
+SELECT firstname,lastname
+FROM user AS u
+INNER JOIN orders AS o ON u.id = o.userid 
+WHERE o.id IN (	SELECT orderid
+		FROM orderitem
+		GROUP BY orderid
+		HAVING COUNT(DISTINCT productid) >= 3);
